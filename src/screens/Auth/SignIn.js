@@ -5,35 +5,17 @@ import Toast, { DURATION } from 'react-native-easy-toast';
 import colors from '../../config/colors';
 import validator from 'validator';
 import SafeAreaView from 'react-native-safe-area-view';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { setAuthToken } from '../../utility/Auth';
-//import { SIGN_IN } from '../../graphql/requests';
-
-const SIGN_IN = gql`
-  mutation signin($email: String!, $password: String!) {
-    signIn(fields: { email: $email, password: $password }) {
-      _id
-      email
-      name
-      token
-      confirmed
-      user_data {
-        _id
-        gender
-        dob
-      }
-    }
-  }
-`;
+import { SIGN_IN } from '../../graphql/requests';
 
 function SignIn(props) {
-  const [email, setEmail] = useState('nitish@hotmail.com');
-  const [password, setPassword] = useState('testing123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const [disableSignIn, setDisableSignIn] = useState(false);
+  const [disableSignIn, setDisableSignIn] = useState(true);
   const [hidePass, setHidePass] = useState(true);
-  //const [loading, setLoading] = useState(false);
   const toast = useRef(null);
 
   const [signIn, { loading }] = useMutation(SIGN_IN, {
@@ -85,7 +67,7 @@ function SignIn(props) {
 
   const onSignInError = err => {
     console.log(`ERROR ${JSON.stringify(err)}`);
-    toast.current.show(err.message, 3000);
+    toast.current.show(err.message.replace('GraphQL error:', '').trim(), 3000);
   };
 
   return (
@@ -96,6 +78,10 @@ function SignIn(props) {
         <TextInput
           label="Email"
           mode="outlined"
+          textContentType="emailAddress"
+          keyboardType={'email-address'}
+          keyboardAppearance="dark"
+          maxLength={255}
           error={emailError}
           value={email}
           onChangeText={onChangeEmail}
@@ -104,7 +90,10 @@ function SignIn(props) {
         <TextInput
           label="Password"
           mode="outlined"
+          textContentType="password"
           secureTextEntry={hidePass}
+          keyboardAppearance="dark"
+          maxLength={255}
           error={passwordError}
           right={
             <TextInput.Icon
@@ -122,7 +111,7 @@ function SignIn(props) {
           labelStyle={styles.forgot_pass_label}
           onPress={() => {
             Keyboard.dismiss();
-            console.log('Pressed');
+            console.log('Forgot Password Pressed');
           }}>
           Forgot Password?
         </Button>

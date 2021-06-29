@@ -5,14 +5,18 @@ export const SIGN_IN = gql`
     signIn(fields: { email: $email, password: $password }) {
       _id
       email
-      name
       token
-      confirmed
-      user_data {
-        _id
-        gender
-        dob
-      }
+      banned
+    }
+  }
+`;
+
+export const SIGN_UP = gql`
+  mutation signup($email: String!, $password: String!, $name: String!) {
+    signUp(fields: { email: $email, password: $password, name: $name }) {
+      _id
+      email
+      token
     }
   }
 `;
